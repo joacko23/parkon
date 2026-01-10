@@ -1,0 +1,10 @@
+spring:
+  jackson:
+    serialization:
+      indent_output: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
