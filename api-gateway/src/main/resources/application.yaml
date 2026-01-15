@@ -1,19 +1,20 @@
 server:
   port: 8080
+
 spring:
   application:
     name: api-gateway
+
   config:
     import: optional:configserver:http://localhost:8888
 
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
-
-
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/**
 
 eureka:
   client:
@@ -24,7 +25,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: "gateway,health,info" # "gateway" es el que necesitas ahora
-  endpoint:
-    gateway:
-      enabled: true # Permite ver las rutas dinámicas
+        include: gateway,health,info
