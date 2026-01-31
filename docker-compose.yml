@@ -7,18 +7,20 @@ services:
       MYSQL_DATABASE: auth_service
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "3306:3306"
+      - "3307:3306"
 
   # 2. Config Server (El primero en la jerarquía Spring)
   config-server:
-    build: ../config-server
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
     container_name: config-server
     ports:
       - "8888:8888"
 
   # 3. Discovery Server (Eureka)
   discovery-server:
-    build: ../service-discovery
+    build: ./service-discovery
     container_name: discovery-server
     ports:
       - "8761:8761"
@@ -27,7 +29,7 @@ services:
 
   # 4. Auth Service (Depende de DB y Eureka)
   auth-service:
-    build: ../auth-service
+    build: ./auth-service
     container_name: auth-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/auth_service?createDatabaseIfNoExists=true&allowPublicKeyRetrieval=true&useSSL=false
@@ -39,7 +41,7 @@ services:
 
   # 5. API Gateway (El punto de entrada)
   gateway-service:
-    build: ../api-gateway
+    build: ./api-gateway
     container_name: gateway-service
     ports:
       - "8080:8080"
