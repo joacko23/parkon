@@ -13,3 +13,24 @@ spring:
       server:
         native:
           search-locations: classpath:/config
+  zipkin:
+    tracing:
+      endpoint: "http://tempo:9411/api/v2/spans"
+
+# Formato de log por defecto (fallback si falla el JSON)
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus" # Exponemos el endpoint para Prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name} # Etiqueta clave para filtrar en Grafana

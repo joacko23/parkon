@@ -22,3 +22,15 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0 # 1.0 = Trazar el 100% de las peticiones (bajar a 0.1 en Prod con alto tráfico)
+    zipkin:
+      tracing:
+        endpoint: "http://tempo:9411/api/v2/spans" # URL del colector de trazas (Tempo o Zipkin)
+
+logging:
+  pattern:
+    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]" # Fallback para logs de texto

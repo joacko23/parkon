@@ -50,3 +50,62 @@ services:
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery-server:8761/eureka/
     depends_on:
       - discovery-server
+
+
+  # ==========================================
+  # CAPA DE OBSERVABILIDAD (LGTM Stack)
+  # ==========================================
+
+  # 6. Loki (Logs)
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - parkon-net
+
+  # 7. Tempo (Tracing)
+  tempo:
+    image: grafana/tempo:latest
+    container_name: tempo
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    ports:
+      - "3200:3200" # Puerto HTTP interno
+      - "9411:9411" # Puerto Zipkin (Donde Spring envía los datos)
+    networks:
+      - parkon-net
+
+  # 8. Prometheus (Métricas)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      # Necesitamos crear este archivo localmente (ver paso 2 abajo)
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - parkon-net
+
+  # 9. Grafana (Visualización)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - loki
+      - tempo
+      - prometheus
+    networks:
+      - parkon-net
+
+networks:
+  parkon-net:
+    driver: bridge
+
