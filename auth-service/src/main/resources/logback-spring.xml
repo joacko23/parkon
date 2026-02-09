@@ -6,16 +6,23 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <includeMdcKeyName>traceId</includeMdcKeyName>
             <includeMdcKeyName>spanId</includeMdcKeyName>
-
             <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSS</timestampPattern>
-
             <jsonGeneratorDecorator class="net.logstash.logback.decorate.CompositeJsonGeneratorDecorator">
                 <decorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
             </jsonGeneratorDecorator>
         </encoder>
     </appender>
 
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>logstash:5000</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>traceId</includeMdcKeyName>
+            <includeMdcKeyName>spanId</includeMdcKeyName>
+        </encoder>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE_JSON" />
+        <appender-ref ref="LOGSTASH" />
     </root>
 </configuration>
